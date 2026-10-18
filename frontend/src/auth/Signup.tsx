@@ -2,7 +2,7 @@ import { useActionState } from "react";
 import "./Signup.css";
 import { supabase } from "./supabase";
 
-async function handleSignupForm(prevState: any, formData: FormData) {
+async function handleSignupForm(_prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
