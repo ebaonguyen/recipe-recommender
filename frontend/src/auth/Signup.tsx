@@ -1,5 +1,4 @@
 import { useActionState } from "react";
-import "./Signup.css";
 import { supabase } from "./supabase";
 
 async function handleSignupForm(_prevState: any, formData: FormData) {
@@ -16,6 +15,9 @@ async function handleSignupForm(_prevState: any, formData: FormData) {
       password,
       options: {
         emailRedirectTo: "http://localhost:5173/login",
+        data: {
+          email: email.trim()
+        }
       },
     });
 
