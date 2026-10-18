@@ -12,7 +12,7 @@ function Home({ user }: { user: any}) {
     async function getProfile() {
       setLoading(true)
 
-      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      const { data: { user }, error: _authError } = await supabase.auth.getUser()
       console.log(user?.id)
 
       const { data, error } = await supabase
@@ -28,8 +28,6 @@ function Home({ user }: { user: any}) {
           console.warn(error)
         } else if (data) {
           setEmail(data.email_address)
-          console.log("this is email: " + data.email_address)
-          // console.log("this is id: " + user.id)
         }
       }
 
