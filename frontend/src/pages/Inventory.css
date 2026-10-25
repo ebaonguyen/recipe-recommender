@@ -1,0 +1,143 @@
+.inventory-page {
+  padding: 24px 20px;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 20px;
+  padding: 0;
+  margin: 32px 0 0;
+  list-style: none;
+  text-align: left;
+}
+
+.inventory-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  overflow-wrap: anywhere;
+}
+
+.inventory-card h2 {
+  margin-bottom: 16px;
+}
+
+.inventory-card-image {
+  max-width: 100%;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.inventory-card p + p {
+  margin-top: 8px;
+}
+
+.inventory-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.inventory-card-actions button {
+  padding: 8px 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.inventory-card-actions button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.inventory-card-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inventory-add-button {
+  padding: 10px 20px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.inventory-add-button:hover {
+  border-color: var(--accent);
+}
+
+.inventory-add-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.inventory-dialog {
+  width: 400px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100svh - 40px);
+  box-sizing: border-box;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.inventory-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.inventory-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inventory-dialog input {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.inventory-dialog p {
+  font-size: 14px;
+}
+
+.inventory-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.inventory-dialog-actions button:not(.inventory-add-button) {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  cursor: pointer;
+}
+
+.inventory-add-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
