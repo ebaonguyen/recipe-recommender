@@ -59,6 +59,7 @@ Create a `.env` file in the repository root using `.env.example` as a template:
 ```dotenv
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-public-anon-or-publishable-key
+SUPABASE_SECRET_KEY=your-secret-key
 ```
 
 Use the project's public **anon key** or **publishable key**, never a secret or
