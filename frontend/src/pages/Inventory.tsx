@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import "./Inventory.css";
+import { supabase } from "../auth/supabase";
 
 type InventoryItem = {
   id: string;
@@ -17,47 +18,6 @@ type Ingredient = {
   strThumb: string | null;
 };
 
-const USE_TEST_INVENTORY = true;
-
-const testInventoryItems: InventoryItem[] = [
-  {
-    id: "11111111-1111-4111-8111-111111111111",
-    user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    ingredient_name: "Chicken",
-    quantity: 500,
-    unit: "grams",
-    expiration_date: "2026-10-28",
-    created_at: "2026-10-25T04:00:00Z",
-  },
-  {
-    id: "22222222-2222-4222-8222-222222222222",
-    user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    ingredient_name: "Rice",
-    quantity: 1.5,
-    unit: "cups",
-    expiration_date: null,
-    created_at: "2026-10-24T12:00:00Z",
-  },
-  {
-    id: "33333333-3333-4333-8333-333333333333",
-    user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    ingredient_name: "Garlic",
-    quantity: null,
-    unit: null,
-    expiration_date: null,
-    created_at: "2026-10-23T10:30:00Z",
-  },
-  {
-    id: "44444444-4444-4444-8444-444444444444",
-    user_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    ingredient_name: "Milk",
-    quantity: 0,
-    unit: "liters",
-    expiration_date: "2026-10-23",
-    created_at: "2026-10-22T08:00:00Z",
-  },
-];
-
 function Inventory() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -69,30 +29,24 @@ function Inventory() {
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(
-    USE_TEST_INVENTORY ? testInventoryItems : [],
-  );
-  const [inventoryStatus, setInventoryStatus] = useState(
-    USE_TEST_INVENTORY ? "" : "Loading inventory...",
-  );
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [inventoryStatus, setInventoryStatus] = useState("Loading inventory...");
 
   async function handleDelete(id: string) {
     setDeleteError("");
     setDeletingId(id);
 
     try {
-      if (!USE_TEST_INVENTORY) {
-        if (!user) throw new Error("Not logged in");
+      if (!user) throw new Error("Not logged in");
 
-        const { data, error } = await supabase
-          .from("inventory_items")
-          .delete()
-          .eq("id", id)
-          .eq("user_id", user.id)
-          .select("id");
+      const { data, error } = await supabase
+        .from("inventory_items")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .select("id");
 
-        if (error || !data?.length) throw new Error("Delete failed");
-      }
+      if (error || !data?.length) throw new Error("Delete failed");
 
       setInventoryItems((items) => items.filter((item) => item.id !== id));
     } catch {
@@ -106,7 +60,7 @@ function Inventory() {
     event.preventDefault();
     setSubmitError("");
 
-    if (!USE_TEST_INVENTORY && !user) {
+    if (!user) {
       return setSubmitError("You must be logged in to save an ingredient.");
     }
 
@@ -129,29 +83,18 @@ function Inventory() {
       };
       let savedItem: InventoryItem;
 
-      if (USE_TEST_INVENTORY) {
-        savedItem = editingItem
-          ? { ...editingItem, ...values }
-          : {
-              ...values,
-              id: crypto.randomUUID(),
-              user_id: testInventoryItems[0].user_id,
-              created_at: new Date().toISOString(),
-            };
-      } else {
-        if (!user) throw new Error("Not logged in");
-        const query = editingItem
-          ? supabase.from("inventory_items")
-              .update(values)
-              .eq("id", editingItem.id)
-              .eq("user_id", user.id)
-          : supabase.from("inventory_items")
-              .insert({ ...values, user_id: user.id });
+      if (!user) throw new Error("Not logged in");
+      const query = editingItem
+        ? supabase.from("inventory_items")
+          .update(values)
+          .eq("id", editingItem.id)
+          .eq("user_id", user.id)
+        : supabase.from("inventory_items")
+          .insert({ ...values, user_id: user.id });
 
-        const { data, error } = await query.select("*").single();
-        if (error) throw new Error(error.message);
-        savedItem = data;
-      }
+      const { data, error } = await query.select("*").single();
+      if (error) throw new Error(error.message);
+      savedItem = data;
 
       setInventoryItems((items) => editingItem
         ? items.map((item) => item.id === editingItem.id ? savedItem : item)
@@ -208,7 +151,7 @@ function Inventory() {
       }
     }
 
-    if (!USE_TEST_INVENTORY) void checkUser();
+    void checkUser();
     void loadIngredients();
   }, []);
 
@@ -217,9 +160,9 @@ function Inventory() {
     ingredient.strIngredient.toLowerCase().includes(ingredientQuery.trim().toLowerCase()),
   );
 
-  // if (!user) {
-  //   return <p>You're not logged in. Log in here.</p>;
-  // }
+  if (!user) {
+    return <p>You're not logged in. Log in here.</p>;
+  }
 
   return (
     <main className="inventory-page">
@@ -249,48 +192,48 @@ function Inventory() {
             )?.strThumb;
 
             return (
-            <li className="inventory-card" key={item.id}>
-              {thumbnail && (
-                <img
-                  key={thumbnail}
-                  className="inventory-card-image"
-                  src={thumbnail}
-                  alt={item.ingredient_name}
-                  width={120}
-                  height={120}
-                  loading="lazy"
-                  onError={(event) => { event.currentTarget.hidden = true; }}
-                />
-              )}
-              <h2>{item.ingredient_name}</h2>
-              {(item.quantity !== null || item.unit) && (
-                <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
-              )}
-              {item.expiration_date && <p>Expiration date: {item.expiration_date}</p>}
-              <div className="inventory-card-actions">
-                <button
-                  type="button"
-                  disabled={deletingId !== null || isSaving}
-                  onClick={() => {
-                    setEditingItem(item);
-                    setIngredientQuery(item.ingredient_name);
-                    setSubmitError("");
-                    dialogRef.current?.showModal();
-                  }}
-                  aria-label={`Edit ${item.ingredient_name}`}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  disabled={deletingId !== null}
-                  onClick={() => handleDelete(item.id)}
-                  aria-label={`Delete ${item.ingredient_name}`}
-                >
-                  {deletingId === item.id ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </li>
+              <li className="inventory-card" key={item.id}>
+                {thumbnail && (
+                  <img
+                    key={thumbnail}
+                    className="inventory-card-image"
+                    src={thumbnail}
+                    alt={item.ingredient_name}
+                    width={120}
+                    height={120}
+                    loading="lazy"
+                    onError={(event) => { event.currentTarget.hidden = true; }}
+                  />
+                )}
+                <h2>{item.ingredient_name}</h2>
+                {(item.quantity !== null || item.unit) && (
+                  <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
+                )}
+                {item.expiration_date && <p>Expiration date: {item.expiration_date}</p>}
+                <div className="inventory-card-actions">
+                  <button
+                    type="button"
+                    disabled={deletingId !== null || isSaving}
+                    onClick={() => {
+                      setEditingItem(item);
+                      setIngredientQuery(item.ingredient_name);
+                      setSubmitError("");
+                      dialogRef.current?.showModal();
+                    }}
+                    aria-label={`Edit ${item.ingredient_name}`}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    disabled={deletingId !== null}
+                    onClick={() => handleDelete(item.id)}
+                    aria-label={`Delete ${item.ingredient_name}`}
+                  >
+                    {deletingId === item.id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </li>
             );
           })}
         </ul>
