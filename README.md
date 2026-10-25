@@ -52,6 +52,20 @@ Frontend URL:
 
 http://localhost:5173
 
+## Supabase
+
+Create a `.env` file in the repository root using `.env.example` as a template:
+
+```dotenv
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-public-anon-or-publishable-key
+```
+
+Use the project's public **anon key** or **publishable key**, never a secret or
+service-role key. Vite reads this root file and exposes only these two Supabase
+values to the frontend. Restart the frontend after changing them. The `.env`
+file is ignored by Git.
+
 ## Running the Project
 
 You need two terminals.
