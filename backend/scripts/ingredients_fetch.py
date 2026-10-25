@@ -52,7 +52,7 @@ def save_ingredients(supabase, ingredients: list[dict]) -> int:
 
 
 def main() -> None:
-    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+    load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
     url = os.getenv("SUPABASE_URL")
     key = os.getenv("SUPABASE_SECRET_KEY")
     if not url or not key:
