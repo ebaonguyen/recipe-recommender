@@ -1,51 +1,14 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../auth/supabase";
-import type { Session } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
-function Home({ user }: { user: any}) {
-  const [_loading, setLoading] = useState(true)
-  const [email, setEmail] = useState(null)
-
-  useEffect(() => {
-    let ignore = false
-
-    async function getProfile() {
-      setLoading(true)
-
-      const { data: { user }, error: _authError } = await supabase.auth.getUser()
-      console.log(user?.id)
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`email_address`)
-        .eq('id', user?.id)
-        .single()
-
-      console.log(data)
-
-      if (!ignore) {
-        if (error) {
-          console.warn(error)
-        } else if (data) {
-          setEmail(data.email_address)
-        }
-      }
-
-      setLoading(false)
-    }
-
-    getProfile()
-
-    return () => {
-      ignore = true
-    }
-  }, [user])
-
+function Home({ user }: { user: User | null }) {
+  const displayName = user?.user_metadata.display_name;
   return (
     <h1>
-      Welcome back {email}!
+      {user
+        ? `Welcome back ${typeof displayName === "string" && displayName ? displayName : user.email}!`
+        : "Welcome to Recipe Recommender!"}
     </h1>
-  )
+  );
 }
 
 export default Home;
