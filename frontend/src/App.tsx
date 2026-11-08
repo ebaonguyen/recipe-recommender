@@ -4,6 +4,7 @@ import { Link, Navigate, Route, Routes } from "react-router";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
 import Recipes from "./pages/Recipes";
+import SavedRecipes from "./pages/SavedRecipes";
 import Signup from "./auth/Signup";
 import Login from "./auth/Login";
 import Profile from "./pages/Profile";
@@ -57,7 +58,8 @@ function App() {
       <nav>
         <Link to="/">Home</Link>{" "}
         <Link to="/recipes">Recipes</Link>{" "}
-        <Link to="/inventory">Inventory</Link>
+        {user && <Link to="/saved">Saved</Link>}{" "}
+        <Link to="/inventory">Inventory</Link>{" "}
         <Link to="/signup">Signup</Link>{" "}
         <Link to="/login">Login</Link>{" "}
         {user && <Link to="/profile">Profile</Link>}
@@ -66,7 +68,17 @@ function App() {
       {authError && <p role="alert">{authError}</p>}
       <Routes>
         <Route path="/" element={<Home user={user} />} />
-        <Route path="/recipes" element={<Recipes />} />
+        
+        <Route path="/recipes" element={<Recipes user={user} />} />
+        <Route
+          path="/saved"
+          element={
+            loading ? <p role="status">Loading saved recipes...</p> :
+            authError ? null :
+            user ? <SavedRecipes key={user.id} user={user} /> :
+            <Navigate to="/login" replace />
+          }
+        />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
@@ -79,9 +91,11 @@ function App() {
             <Navigate to="/login" replace />
           }
         />
+        
       </Routes>
     </>
   );
 }
 
 export default App;
+
