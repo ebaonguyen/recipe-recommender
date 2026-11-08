@@ -27,6 +27,9 @@ function Inventory() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [ingredientQuery, setIngredientQuery] = useState("");
   const [selectedIngredientId, setSelectedIngredientId] = useState<number | null>(null);
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("");
+  const [expirationDate, setExpirationDate] = useState("");
   const [ingredientStatus, setIngredientStatus] = useState("Loading ingredients...");
   const [isSaving, setIsSaving] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -68,20 +71,18 @@ function Inventory() {
       return setSubmitError("You must be logged in to save an ingredient.");
     }
 
-    const formData = new FormData(event.currentTarget);
-    const quantity = String(formData.get("quantity") ?? "").trim();
-    const unit = String(formData.get("unit") ?? "").trim();
-    const expirationDate = String(formData.get("expiration_date") ?? "");
+    const trimmedQuantity = quantity.trim();
+    const trimmedUnit = unit.trim();
 
     if (!selectedIngredientId) return setSubmitError("Please select an ingredient.");
-    if (quantity && (!Number.isFinite(Number(quantity)) || Number(quantity) < 0)) return setSubmitError("Quantity must be a non-negative number.");
+    if (trimmedQuantity && (!Number.isFinite(Number(trimmedQuantity)) || Number(trimmedQuantity) < 0)) return setSubmitError("Quantity must be a non-negative number.");
 
     setIsSaving(true);
     try {
       const values = {
         ingredient_id: selectedIngredientId,
-        quantity: quantity === "" ? null : Number(quantity),
-        unit: unit || null,
+        quantity: trimmedQuantity === "" ? null : Number(trimmedQuantity),
+        unit: trimmedUnit || null,
         expiration_date: expirationDate || null,
       };
       let savedItem: InventoryItem;
@@ -176,6 +177,9 @@ function Inventory() {
           setEditingItem(null);
           setIngredientQuery("");
           setSelectedIngredientId(null);
+          setQuantity("");
+          setUnit("");
+          setExpirationDate("");
           dialogRef.current?.showModal();
         }}
       >
@@ -220,8 +224,15 @@ function Inventory() {
                     disabled={deletingId !== null || isSaving}
                     onClick={() => {
                     setEditingItem(item);
-                    setIngredientQuery(item.ingredients?.[0]?.name ?? "");
+                    setIngredientQuery(
+                      ingredients.find((ingredient) => ingredient.id === item.ingredient_id)?.name ??
+                      item.ingredients?.[0]?.name ??
+                      "",
+                    );
                     setSelectedIngredientId(item.ingredient_id);
+                    setQuantity(item.quantity?.toString() ?? "");
+                    setUnit(item.unit ?? "");
+                    setExpirationDate(item.expiration_date ?? "");
                       setSubmitError("");
                       dialogRef.current?.showModal();
                     }}
@@ -254,6 +265,9 @@ function Inventory() {
           dialogRef.current?.querySelector("form")?.reset();
           setIngredientQuery("");
           setSelectedIngredientId(null);
+          setQuantity("");
+          setUnit("");
+          setExpirationDate("");
           setEditingItem(null);
         }}
       >
@@ -296,7 +310,8 @@ function Inventory() {
           <input
             id="ingredient-quantity"
             name="quantity"
-            defaultValue={editingItem?.quantity ?? ""}
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
             type="number"
             min="0"
             step="any"
@@ -306,7 +321,8 @@ function Inventory() {
           <input
             id="ingredient-unit"
             name="unit"
-            defaultValue={editingItem?.unit ?? ""}
+            value={unit}
+            onChange={(event) => setUnit(event.target.value)}
             type="text"
             placeholder="e.g. grams, cups, pieces"
           />
@@ -315,7 +331,8 @@ function Inventory() {
           <input
             id="ingredient-expiration"
             name="expiration_date"
-            defaultValue={editingItem?.expiration_date ?? ""}
+            value={expirationDate}
+            onChange={(event) => setExpirationDate(event.target.value)}
             type="date"
           />
 
