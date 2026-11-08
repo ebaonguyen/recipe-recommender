@@ -35,6 +35,26 @@
   margin-top: 8px;
 }
 
+.inventory-description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.inventory-description.expanded {
+  display: block;
+}
+
+.inventory-description-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
 .inventory-card-actions {
   display: flex;
   flex-wrap: wrap;

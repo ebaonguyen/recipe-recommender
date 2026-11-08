@@ -15,11 +15,12 @@ type InventoryItem = {
 type Ingredient = {
   id: number;
   name: string;
+  description: string | null;
   thumbnail_url: string | null;
 };
 
 const inventorySelect =
-  "id, ingredient_id, quantity, unit, expiration_date, ingredients(id, name, thumbnail_url)";
+  "id, ingredient_id, quantity, unit, expiration_date, ingredients(id, name, description, thumbnail_url)";
 
 function Inventory() {
   const [user, setUser] = useState<{ id: string } | null>(null);
@@ -36,6 +37,7 @@ function Inventory() {
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set());
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [inventoryStatus, setInventoryStatus] = useState("Loading inventory...");
 
@@ -143,7 +145,7 @@ function Inventory() {
       try {
         const { data, error } = await supabase
           .from("ingredients")
-          .select("id, name, thumbnail_url")
+          .select("id, name, description, thumbnail_url")
           .order("name");
         if (error) throw new Error(error.message);
 
@@ -214,6 +216,25 @@ function Inventory() {
                   />
                 )}
                 <h2>{ingredientName}</h2>
+                {ingredient?.description && (
+                  <>
+                    <p className={`inventory-description${expandedDescriptions.has(ingredient.id) ? " expanded" : ""}`}>
+                      {ingredient.description}
+                    </p>
+                    <button
+                      className="inventory-description-toggle"
+                      type="button"
+                      onClick={() => setExpandedDescriptions((expanded) => {
+                        const next = new Set(expanded);
+                        if (next.has(ingredient.id)) next.delete(ingredient.id);
+                        else next.add(ingredient.id);
+                        return next;
+                      })}
+                    >
+                      {expandedDescriptions.has(ingredient.id) ? "Show less" : "Show more"}
+                    </button>
+                  </>
+                )}
                 {(item.quantity !== null || item.unit) && (
                   <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
                 )}
