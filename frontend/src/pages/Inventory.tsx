@@ -217,28 +217,28 @@ function Inventory() {
                 )}
                 <h2>{ingredientName}</h2>
                 {ingredient?.description && (
-                  <>
-                    <p className={`inventory-description${expandedDescriptions.has(ingredient.id) ? " expanded" : ""}`}>
-                      {ingredient.description}
-                    </p>
-                    <button
-                      className="inventory-description-toggle"
-                      type="button"
-                      onClick={() => setExpandedDescriptions((expanded) => {
-                        const next = new Set(expanded);
-                        if (next.has(ingredient.id)) next.delete(ingredient.id);
-                        else next.add(ingredient.id);
-                        return next;
-                      })}
-                    >
-                      {expandedDescriptions.has(ingredient.id) ? "Show less" : "Show more"}
-                    </button>
-                  </>
+                  <p className={`inventory-description${expandedDescriptions.has(ingredient.id) ? " expanded" : ""}`}>
+                    {ingredient.description}
+                  </p>
                 )}
                 {(item.quantity !== null || item.unit) && (
                   <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
                 )}
                 {item.expiration_date && <p>Expiration date: {item.expiration_date}</p>}
+                {ingredient?.description && (
+                  <button
+                    className="inventory-description-toggle"
+                    type="button"
+                    onClick={() => setExpandedDescriptions((expanded) => {
+                      const next = new Set(expanded);
+                      if (next.has(ingredient.id)) next.delete(ingredient.id);
+                      else next.add(ingredient.id);
+                      return next;
+                    })}
+                  >
+                    {expandedDescriptions.has(ingredient.id) ? "Show less" : "Show more"}
+                  </button>
+                )}
                 <div className="inventory-card-actions">
                   <button
                     type="button"
