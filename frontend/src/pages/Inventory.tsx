@@ -5,24 +5,28 @@ import { supabase } from "../auth/supabase";
 
 type InventoryItem = {
   id: string;
-  user_id: string;
-  ingredient_name: string;
+  ingredient_id: number;
   quantity: number | null;
   unit: string | null;
   expiration_date: string | null;
-  created_at: string;
+  ingredients?: Ingredient[];
 };
 
 type Ingredient = {
-  strIngredient: string;
-  strThumb: string | null;
+  id: number;
+  name: string;
+  thumbnail_url: string | null;
 };
+
+const inventorySelect =
+  "id, ingredient_id, quantity, unit, expiration_date, ingredients(id, name, thumbnail_url)";
 
 function Inventory() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [ingredientQuery, setIngredientQuery] = useState("");
+  const [selectedIngredientId, setSelectedIngredientId] = useState<number | null>(null);
   const [ingredientStatus, setIngredientStatus] = useState("Loading ingredients...");
   const [isSaving, setIsSaving] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -65,25 +69,23 @@ function Inventory() {
     }
 
     const formData = new FormData(event.currentTarget);
-    const ingredientName = String(formData.get("ingredient") ?? "").trim();
     const quantity = String(formData.get("quantity") ?? "").trim();
     const unit = String(formData.get("unit") ?? "").trim();
     const expirationDate = String(formData.get("expiration_date") ?? "");
 
-    if (!ingredientName) return setSubmitError("Ingredient name is required.");
+    if (!selectedIngredientId) return setSubmitError("Please select an ingredient.");
     if (quantity && (!Number.isFinite(Number(quantity)) || Number(quantity) < 0)) return setSubmitError("Quantity must be a non-negative number.");
 
     setIsSaving(true);
     try {
       const values = {
-        ingredient_name: ingredientName,
+        ingredient_id: selectedIngredientId,
         quantity: quantity === "" ? null : Number(quantity),
         unit: unit || null,
         expiration_date: expirationDate || null,
       };
       let savedItem: InventoryItem;
 
-      if (!user) throw new Error("Not logged in");
       const query = editingItem
         ? supabase.from("inventory_items")
           .update(values)
@@ -92,7 +94,9 @@ function Inventory() {
         : supabase.from("inventory_items")
           .insert({ ...values, user_id: user.id });
 
-      const { data, error } = await query.select("*").single();
+      const { data, error } = await query
+        .select(inventorySelect)
+        .single();
       if (error) throw new Error(error.message);
       savedItem = data;
 
@@ -109,7 +113,6 @@ function Inventory() {
   }
 
   useEffect(() => {
-    // Check if user is logged in
     async function checkUser() {
       try {
         const { data, error: authError } = await supabase.auth.getUser();
@@ -123,7 +126,7 @@ function Inventory() {
 
         const { data: items, error } = await supabase
           .from("inventory_items")
-          .select("*")
+        .select(inventorySelect)
           .eq("user_id", data.user.id)
           .order("created_at", { ascending: false });
 
@@ -135,16 +138,15 @@ function Inventory() {
       }
     }
 
-    // Load ingredients from the API
     async function loadIngredients() {
       try {
-        const response = await fetch(
-          "https://www.themealdb.com/api/json/v1/1/list.php?i=list",
-        );
-        if (!response.ok) throw new Error("Ingredient request failed");
+        const { data, error } = await supabase
+          .from("ingredients")
+          .select("id, name, thumbnail_url")
+          .order("name");
+        if (error) throw new Error(error.message);
 
-        const data: { meals: Ingredient[] } = await response.json();
-        setIngredients(data.meals);
+        setIngredients(data ?? []);
         setIngredientStatus("");
       } catch {
         setIngredientStatus("Could not load ingredients. Please reopen the page to retry.");
@@ -155,9 +157,8 @@ function Inventory() {
     void loadIngredients();
   }, []);
 
-  // Filter ingredients based on the user's query
   const matchingIngredients = ingredients.filter((ingredient) =>
-    ingredient.strIngredient.toLowerCase().includes(ingredientQuery.trim().toLowerCase()),
+    ingredient.name.toLowerCase().includes(ingredientQuery.trim().toLowerCase()),
   );
 
   if (!user) {
@@ -174,6 +175,7 @@ function Inventory() {
           setSubmitError("");
           setEditingItem(null);
           setIngredientQuery("");
+          setSelectedIngredientId(null);
           dialogRef.current?.showModal();
         }}
       >
@@ -187,9 +189,11 @@ function Inventory() {
       ) : (
         <ul className="inventory-grid">
           {inventoryItems.map((item) => {
-            const thumbnail = ingredients.find((ingredient) =>
-              ingredient.strIngredient.toLowerCase() === item.ingredient_name.trim().toLowerCase(),
-            )?.strThumb;
+            const ingredient = item.ingredients?.[0] ?? ingredients.find(
+              (candidate) => candidate.id === item.ingredient_id,
+            );
+            const ingredientName = ingredient?.name ?? "Unknown ingredient";
+            const thumbnail = ingredient?.thumbnail_url;
 
             return (
               <li className="inventory-card" key={item.id}>
@@ -198,14 +202,14 @@ function Inventory() {
                     key={thumbnail}
                     className="inventory-card-image"
                     src={thumbnail}
-                    alt={item.ingredient_name}
+                  alt={ingredientName}
                     width={120}
                     height={120}
                     loading="lazy"
                     onError={(event) => { event.currentTarget.hidden = true; }}
                   />
                 )}
-                <h2>{item.ingredient_name}</h2>
+                <h2>{ingredientName}</h2>
                 {(item.quantity !== null || item.unit) && (
                   <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
                 )}
@@ -215,12 +219,13 @@ function Inventory() {
                     type="button"
                     disabled={deletingId !== null || isSaving}
                     onClick={() => {
-                      setEditingItem(item);
-                      setIngredientQuery(item.ingredient_name);
+                    setEditingItem(item);
+                    setIngredientQuery(item.ingredients?.[0]?.name ?? "");
+                    setSelectedIngredientId(item.ingredient_id);
                       setSubmitError("");
                       dialogRef.current?.showModal();
                     }}
-                    aria-label={`Edit ${item.ingredient_name}`}
+                      aria-label={`Edit ${ingredientName}`}
                   >
                     Edit
                   </button>
@@ -228,7 +233,7 @@ function Inventory() {
                     type="button"
                     disabled={deletingId !== null}
                     onClick={() => handleDelete(item.id)}
-                    aria-label={`Delete ${item.ingredient_name}`}
+                    aria-label={`Delete ${ingredientName}`}
                   >
                     {deletingId === item.id ? "Deleting..." : "Delete"}
                   </button>
@@ -248,6 +253,7 @@ function Inventory() {
         onClose={() => {
           dialogRef.current?.querySelector("form")?.reset();
           setIngredientQuery("");
+          setSelectedIngredientId(null);
           setEditingItem(null);
         }}
       >
@@ -264,12 +270,20 @@ function Inventory() {
             autoComplete="off"
             placeholder="Type to search ingredients"
             value={ingredientQuery}
-            onChange={(event) => setIngredientQuery(event.target.value)}
+            onChange={(event) => {
+              const value = event.target.value;
+              setIngredientQuery(value);
+              setSelectedIngredientId(
+                ingredients.find(
+                  (ingredient) => ingredient.name.toLowerCase() === value.trim().toLowerCase(),
+                )?.id ?? null,
+              );
+            }}
             required
           />
           <datalist id="ingredient-options">
             {matchingIngredients.map((ingredient) => (
-              <option key={ingredient.strIngredient} value={ingredient.strIngredient} />
+              <option key={ingredient.id} value={ingredient.name} />
             ))}
           </datalist>
           <p role="status">
