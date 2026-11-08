@@ -12,6 +12,26 @@
   text-align: left;
 }
 
+.inventory-filters {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto minmax(160px, 1fr) auto minmax(160px, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.inventory-filters input,
+.inventory-filters select {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
 .inventory-card {
   min-width: 0;
   padding: 24px;
@@ -31,8 +51,45 @@
   margin-bottom: 16px;
 }
 
-.inventory-card p + p {
-  margin-top: 8px;
+.inventory-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.inventory-quantity {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.inventory-expiration {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.inventory-expiration-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.inventory-expiration-badge.expired {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.inventory-expiration-badge.expiring {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .inventory-description {
@@ -60,6 +117,18 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 20px;
+}
+
+@media (max-width: 800px) {
+  .inventory-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .inventory-filters {
+    grid-template-columns: 1fr;
+  }
 }
 
 .inventory-card-actions button {

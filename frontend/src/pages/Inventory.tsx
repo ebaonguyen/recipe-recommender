@@ -19,8 +19,33 @@ type Ingredient = {
   thumbnail_url: string | null;
 };
 
+type ExpirationFilter = "all" | "expired" | "expiring" | "no-date";
+type SortOption = "name" | "expiration";
+
 const inventorySelect =
   "id, ingredient_id, quantity, unit, expiration_date, ingredients(id, name, description, thumbnail_url)";
+
+function expirationStatus(date: string | null) {
+  if (!date) return "no-date";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expiration = new Date(`${date}T00:00:00`);
+  const sevenDaysFromNow = new Date(today);
+  sevenDaysFromNow.setDate(today.getDate() + 7);
+
+  if (expiration < today) return "expired";
+  if (expiration <= sevenDaysFromNow) return "expiring";
+  return "fresh";
+}
+
+function formatExpirationDate(date: string) {
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${date}T00:00:00`));
+}
 
 function Inventory() {
   const [user, setUser] = useState<{ id: string } | null>(null);
@@ -40,6 +65,9 @@ function Inventory() {
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set());
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [inventoryStatus, setInventoryStatus] = useState("Loading inventory...");
+  const [inventorySearch, setInventorySearch] = useState("");
+  const [expirationFilter, setExpirationFilter] = useState<ExpirationFilter>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
 
   async function handleDelete(id: string) {
     setDeleteError("");
@@ -164,6 +192,33 @@ function Inventory() {
     ingredient.name.toLowerCase().includes(ingredientQuery.trim().toLowerCase()),
   );
 
+  const visibleItems = inventoryItems
+    .filter((item) => {
+      const ingredient = item.ingredients?.[0] ?? ingredients.find(
+        (candidate) => candidate.id === item.ingredient_id,
+      );
+      const search = inventorySearch.trim().toLowerCase();
+      const matchesSearch = !search ||
+        ingredient?.name.toLowerCase().includes(search) ||
+        ingredient?.description?.toLowerCase().includes(search);
+      const status = expirationStatus(item.expiration_date);
+      const matchesExpiration = expirationFilter === "all" ||
+        (expirationFilter === "expired" && status === "expired") ||
+        (expirationFilter === "expiring" && status === "expiring") ||
+        (expirationFilter === "no-date" && status === "no-date");
+      return matchesSearch && matchesExpiration;
+    })
+    .sort((a, b) => {
+      const aIngredient = a.ingredients?.[0] ?? ingredients.find((item) => item.id === a.ingredient_id);
+      const bIngredient = b.ingredients?.[0] ?? ingredients.find((item) => item.id === b.ingredient_id);
+      if (sortBy === "name") {
+        return (aIngredient?.name ?? "").localeCompare(bIngredient?.name ?? "");
+      }
+      if (!a.expiration_date) return 1;
+      if (!b.expiration_date) return -1;
+      return a.expiration_date.localeCompare(b.expiration_date);
+    });
+
   if (!user) {
     return <p>You're not logged in. Log in here.</p>;
   }
@@ -188,13 +243,47 @@ function Inventory() {
         Add Ingredient
       </button>
       {deleteError && <p role="alert">{deleteError}</p>}
+      {inventoryItems.length > 0 && (
+        <div className="inventory-filters">
+          <label htmlFor="inventory-search">Search inventory</label>
+          <input
+            id="inventory-search"
+            type="search"
+            value={inventorySearch}
+            onChange={(event) => setInventorySearch(event.target.value)}
+            placeholder="Search ingredients"
+          />
+          <label htmlFor="expiration-filter">Expiration</label>
+          <select
+            id="expiration-filter"
+            value={expirationFilter}
+            onChange={(event) => setExpirationFilter(event.target.value as ExpirationFilter)}
+          >
+            <option value="all">All items</option>
+            <option value="expired">Expired</option>
+            <option value="expiring">Expiring within 7 days</option>
+            <option value="no-date">No expiration date</option>
+          </select>
+          <label htmlFor="inventory-sort">Sort by</label>
+          <select
+            id="inventory-sort"
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value as SortOption)}
+          >
+            <option value="name">Ingredient name</option>
+            <option value="expiration">Expiration date</option>
+          </select>
+        </div>
+      )}
       {inventoryStatus ? (
         <p role="status">{inventoryStatus}</p>
       ) : inventoryItems.length === 0 ? (
         <p>Your inventory is empty.</p>
+      ) : visibleItems.length === 0 ? (
+        <p>No inventory items match your filters.</p>
       ) : (
         <ul className="inventory-grid">
-          {inventoryItems.map((item) => {
+          {visibleItems.map((item) => {
             const ingredient = item.ingredients?.[0] ?? ingredients.find(
               (candidate) => candidate.id === item.ingredient_id,
             );
@@ -216,15 +305,31 @@ function Inventory() {
                   />
                 )}
                 <h2>{ingredientName}</h2>
+                <div className="inventory-meta">
+                  {(item.quantity !== null || item.unit) && (
+                    <p className="inventory-quantity">
+                      {[item.quantity, item.unit]
+                        .filter((value) => value !== null && value !== "")
+                        .join(" ")}
+                    </p>
+                  )}
+                  {item.expiration_date && (
+                    <div className="inventory-expiration">
+                      <span>Expires {formatExpirationDate(item.expiration_date)}</span>
+                      {expirationStatus(item.expiration_date) === "expired" && (
+                        <span className="inventory-expiration-badge expired">Expired</span>
+                      )}
+                      {expirationStatus(item.expiration_date) === "expiring" && (
+                        <span className="inventory-expiration-badge expiring">Expiring soon</span>
+                      )}
+                    </div>
+                  )}
+                </div>
                 {ingredient?.description && (
                   <p className={`inventory-description${expandedDescriptions.has(ingredient.id) ? " expanded" : ""}`}>
                     {ingredient.description}
                   </p>
                 )}
-                {(item.quantity !== null || item.unit) && (
-                  <p>{[item.quantity, item.unit].filter((value) => value !== null && value !== "").join(" ")}</p>
-                )}
-                {item.expiration_date && <p>Expiration date: {item.expiration_date}</p>}
                 {ingredient?.description && (
                   <button
                     className="inventory-description-toggle"
