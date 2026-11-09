@@ -73,6 +73,22 @@ After logging in, select **Profile** in the navigation to update your display
 name and email, or change your password using the separate password form.
 Display names are stored in Supabase Auth user metadata as `display_name`; the
 welcome message uses this name, falling back to your current Auth email.
+
+## Logging Out
+
+While logged in, select **Log out** in the navigation to end the session in
+this browser.
+
+You are also logged out automatically after 30 minutes without any input
+(mouse, keyboard, scroll, or touch). Activity is tracked client-side in
+`localStorage`, so activity in any open tab keeps you signed in, and returning
+after the browser was closed longer than the timeout logs you out. To change the
+timeout, set `VITE_IDLE_TIMEOUT_MINUTES` in `frontend/.env` and restart the
+frontend:
+
+```dotenv
+VITE_IDLE_TIMEOUT_MINUTES=15
+```
 No additional profile table or database migration is required.
 
 Email changes follow your Supabase project's confirmation settings. When
