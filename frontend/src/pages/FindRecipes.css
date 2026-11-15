@@ -1,0 +1,132 @@
+.find-page > p {
+  max-width: 640px;
+  margin: 0 auto 8px;
+}
+
+.find-section {
+  max-width: 900px;
+  margin: 24px auto 0;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.find-section h2,
+.find-section legend {
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: var(--text-h);
+}
+
+.find-ingredient-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.find-ingredient-form input {
+  flex: 1 1 220px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.find-section button {
+  padding: 8px 14px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.find-section button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.find-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.find-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.find-chips button {
+  padding: 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.find-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px 16px;
+}
+
+.find-options legend {
+  padding: 0 4px;
+}
+
+.find-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.find-note,
+.find-clear {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.find-note {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.find-match {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+  font-size: 14px;
+}
+
+.find-match p {
+  margin: 2px 0;
+}
+
+.find-more {
+  margin-top: 24px;
+  padding: 10px 20px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}

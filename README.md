@@ -74,6 +74,25 @@ name and email, or change your password using the separate password form.
 Display names are stored in Supabase Auth user metadata as `display_name`; the
 welcome message uses this name, falling back to your current Auth email.
 
+## Finding Recipes by Ingredients
+
+Select **Find Recipes** in the navigation to search by what you have:
+
+- **Ingredients:** type ingredients (comma-separated is fine) and press **Add**,
+  or, when logged in, select **Use my inventory** to add everything in your
+  inventory. Matching ignores case and plurals, and matches whole words, so
+  "chicken" matches "chicken thighs" but not derived products like
+  "chicken stock" (type "chicken stock" to match it).
+- **Dietary restrictions** (vegetarian, vegan, no shellfish, gluten-free, etc.)
+  are strict filters: recipes that break any of them are hidden. They are
+  checked against ingredient names and recipe categories, so always double-check
+  labels for allergies.
+- **Preferred cuisines** are soft preferences that boost matching recipes.
+
+Results are ranked by the number of your ingredients a recipe uses plus one
+point for a preferred cuisine; ties favour recipes that need fewer additional
+ingredients. Your dietary and cuisine choices are remembered in this browser.
+
 ## Logging Out
 
 While logged in, select **Log out** in the navigation to end the session in

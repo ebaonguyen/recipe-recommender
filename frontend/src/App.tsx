@@ -4,6 +4,7 @@ import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
 import Recipes from "./pages/Recipes";
+import FindRecipes from "./pages/FindRecipes";
 import SavedRecipes from "./pages/SavedRecipes";
 import Signup from "./auth/Signup";
 import Login from "./auth/Login";
@@ -90,6 +91,7 @@ function App() {
       <nav>
         <Link to="/">Home</Link>{" "}
         <Link to="/recipes">Recipes</Link>{" "}
+        <Link to="/find">Find Recipes</Link>{" "}
         {user && <Link to="/saved">Saved</Link>}{" "}
         {user &&<Link to="/inventory">Inventory</Link>}{" "}
         {!user && <><Link to="/signup">Signup</Link>{" "}</>}
@@ -108,6 +110,7 @@ function App() {
         <Route path="/" element={<Home user={user} />} />
         
         <Route path="/recipes" element={<Recipes user={user} />} />
+        <Route path="/find" element={<FindRecipes user={user} />} />
         <Route
           path="/saved"
           element={

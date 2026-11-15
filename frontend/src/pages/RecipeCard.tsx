@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type Meal = {
   id: number;
   name: string;
@@ -30,9 +32,10 @@ type Props = {
   busy: boolean;
   onToggleSave: (meal: Meal) => void;
   canSave: boolean;
+  children?: ReactNode;
 };
 
-function RecipeCard({ meal, saved, busy, onToggleSave, canSave }: Props) {
+function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Props) {
   return (
     <li className="recipe-card">
       {meal.thumbnail_url && (
@@ -46,6 +49,7 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave }: Props) {
       )}
       <h2>{meal.name}</h2>
       <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
+      {children}
 
       <details>
         <summary>Ingredients ({meal.ingredients.length})</summary>
