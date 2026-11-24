@@ -87,12 +87,16 @@ function SavedRecipes({ user }: { user: User }) {
 
   return (
     <main className="recipes-page">
-      <h1>Saved Recipes</h1>
+      <header className="page-heading">
+        <p className="page-eyebrow">YOUR COLLECTION</p>
+        <h1>Saved Recipes</h1>
+        <p className="page-intro">All the recipes you want to come back to, in one place.</p>
+      </header>
       {removeError && <p role="alert">{removeError}</p>}
       {status ? (
         <p role="status">{status}</p>
       ) : meals.length === 0 ? (
-        <p>
+        <p className="empty-state">
           You haven't saved any recipes yet. Browse the <Link to="/recipes">Recipes</Link> page
           to find some.
         </p>

@@ -1,4 +1,5 @@
 import { useActionState } from "react";
+import { Link } from "react-router";
 import { supabase } from "./supabase";
 
 async function handleSignupForm(_prevState: any, formData: FormData) {
@@ -46,17 +47,25 @@ function Signup() {
   });
 
   return (
-    <form action={formAction}>
-      <input type="email" name="email" required placeholder="Email" />
-      <input type="password" name="password" required placeholder="Password" />
-      
-      {state.error && <p className="error">{state.error}</p>}
-      {state.message && <p className="message">{state.message}</p>}
-      
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Signing up..." : "Sign Up"}
-      </button>
-    </form>
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="signup-title">
+        <p className="page-eyebrow">YOUR KITCHEN, ORGANIZED</p>
+        <h1 id="signup-title">Create your account</h1>
+        <p className="page-intro">Save recipes you love and keep track of the ingredients you have.</p>
+        <form className="account-form" action={formAction}>
+          <label htmlFor="signup-email">Email</label>
+          <input id="signup-email" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
+          <label htmlFor="signup-password">Password</label>
+          <input id="signup-password" type="password" name="password" autoComplete="new-password" required placeholder="Choose a password" />
+          {state.error && <p className="error" role="alert">{state.error}</p>}
+          {state.message && <p className="message" role="status">{state.message}</p>}
+          <button type="submit" disabled={isPending}>
+            {isPending ? "Signing up..." : "Create account"}
+          </button>
+        </form>
+        <p className="auth-switch">Already have an account? <Link to="/login">Log in</Link></p>
+      </section>
+    </main>
   );
 }
 

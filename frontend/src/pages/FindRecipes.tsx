@@ -131,11 +131,14 @@ function FindRecipes({ user }: { user: User | null }) {
 
   return (
     <main className="recipes-page find-page">
+      <header className="page-heading">
+      <p className="page-eyebrow">MAKE THE MOST OF YOUR KITCHEN</p>
       <h1>Find Recipes</h1>
-      <p>
+      <p className="page-intro">
         Add the ingredients you have and your preferences. Recipes are ranked by how many of
         your ingredients and preferred cuisines they match.
       </p>
+      </header>
 
       <section className="find-section" aria-labelledby="find-ingredients-heading">
         <h2 id="find-ingredients-heading">Your ingredients</h2>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router";
 import "./Inventory.css";
 import { supabase } from "../auth/supabase";
 
@@ -220,12 +221,24 @@ function Inventory() {
     });
 
   if (!user) {
-    return <p>You're not logged in. Log in here.</p>;
+    return (
+      <main className="inventory-page">
+        <h1>Inventory</h1>
+        <p className="empty-state" role="status">
+          {inventoryStatus}
+          {inventoryStatus === "Log in to view your inventory." && <> <Link to="/login">Log in</Link></>}
+        </p>
+      </main>
+    );
   }
 
   return (
     <main className="inventory-page">
-      <h1>Inventory Page</h1>
+      <header className="page-heading">
+        <p className="page-eyebrow">YOUR KITCHEN</p>
+        <h1>Inventory</h1>
+        <p className="page-intro">Keep track of your ingredients and their expiration dates.</p>
+      </header>
       <button
         className="inventory-add-button"
         type="button"
@@ -278,9 +291,9 @@ function Inventory() {
       {inventoryStatus ? (
         <p role="status">{inventoryStatus}</p>
       ) : inventoryItems.length === 0 ? (
-        <p>Your inventory is empty.</p>
+        <p className="empty-state">Your inventory is empty. Add an ingredient to get started.</p>
       ) : visibleItems.length === 0 ? (
-        <p>No inventory items match your filters.</p>
+        <p className="empty-state">No inventory items match your filters.</p>
       ) : (
         <ul className="inventory-grid">
           {visibleItems.map((item) => {

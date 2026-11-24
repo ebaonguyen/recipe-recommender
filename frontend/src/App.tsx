@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
+import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
 import Recipes from "./pages/Recipes";
@@ -88,15 +88,15 @@ function App() {
 
   return (
     <>
-      <nav>
-        <Link to="/">Home</Link>{" "}
-        <Link to="/recipes">Recipes</Link>{" "}
-        <Link to="/find">Find Recipes</Link>{" "}
-        {user && <Link to="/saved">Saved</Link>}{" "}
-        {user &&<Link to="/inventory">Inventory</Link>}{" "}
-        {!user && <><Link to="/signup">Signup</Link>{" "}</>}
-        {!user && <><Link to="/login">Login</Link>{" "}</>}
-        {user && <><Link to="/profile">Profile</Link>{" "}</>}
+      <nav className="app-nav" aria-label="Main navigation">
+        <NavLink className="nav-brand" to="/" end aria-label="Recipe Recommender home"><span>Recipe Recommender</span></NavLink>
+        <NavLink to="/recipes">Recipes</NavLink>
+        <NavLink to="/find">Find Recipes</NavLink>
+        {user && <NavLink to="/saved">Saved</NavLink>}
+        {user && <NavLink to="/inventory">Inventory</NavLink>}
+        {!user && <NavLink to="/signup">Sign up</NavLink>}
+        {!user && <NavLink to="/login">Log in</NavLink>}
+        {user && <NavLink to="/profile">Profile</NavLink>}
         {user && (
           <button type="button" onClick={() => void logOut("manual")} disabled={signingOut}>
             {signingOut ? "Logging out..." : "Log out"}

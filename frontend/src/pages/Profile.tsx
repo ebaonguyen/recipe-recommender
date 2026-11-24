@@ -59,9 +59,14 @@ function Profile({ user }: { user: User }) {
   const pending = profilePending || passwordPending;
 
   return (
-    <main>
-      <h1>Profile</h1>
-      <form action={profileAction}>
+    <main className="profile-page">
+      <header className="page-heading">
+        <p className="page-eyebrow">YOUR ACCOUNT</p>
+        <h1>Profile</h1>
+        <p className="page-intro">Manage your account details and password.</p>
+      </header>
+      <div className="profile-forms">
+      <form className="profile-form" action={profileAction}>
         <fieldset disabled={pending}>
           <legend>Profile details</legend>
           <label htmlFor="displayName">Display name</label>
@@ -80,7 +85,7 @@ function Profile({ user }: { user: User }) {
         {profileState.message && <p role="status">{profileState.message}</p>}
       </form>
 
-      <form action={passwordAction}>
+      <form className="profile-form" action={passwordAction}>
         <fieldset disabled={pending}>
           <legend>Change password</legend>
           <label htmlFor="password">New password</label>
@@ -92,6 +97,7 @@ function Profile({ user }: { user: User }) {
         {passwordState.error && <p role="alert">{passwordState.error}</p>}
         {passwordState.message && <p role="status">{passwordState.message}</p>}
       </form>
+      </div>
     </main>
   );
 }

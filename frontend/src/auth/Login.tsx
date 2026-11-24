@@ -1,5 +1,5 @@
 import { useActionState } from "react";
-// import "./Login.css"; // or share the same stylesheet if styles are identical
+import { Link } from "react-router";
 import { supabase } from "./supabase";
 
 async function handleLoginForm(_prevState: any, formData: FormData) {
@@ -39,18 +39,25 @@ function Login() {
   });
 
   return (
-    <form action={formAction}>
-      <h2>Log In</h2>
-      <input type="email" name="email" required placeholder="Email" />
-      <input type="password" name="password" required placeholder="Password" />
-      
-      {state.error && <p className="error">{state.error}</p>}
-      {state.message && <p className="message">{state.message}</p>}
-      
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Logging in..." : "Log In"}
-      </button>
-    </form>
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="login-title">
+        <p className="page-eyebrow">WELCOME BACK</p>
+        <h1 id="login-title">Log in</h1>
+        <p className="page-intro">Pick up where you left off with your recipes and ingredients.</p>
+        <form className="account-form" action={formAction}>
+          <label htmlFor="login-email">Email</label>
+          <input id="login-email" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
+          <label htmlFor="login-password">Password</label>
+          <input id="login-password" type="password" name="password" autoComplete="current-password" required placeholder="Your password" />
+          {state.error && <p className="error" role="alert">{state.error}</p>}
+          {state.message && <p className="message" role="status">{state.message}</p>}
+          <button type="submit" disabled={isPending}>
+            {isPending ? "Logging in..." : "Log in"}
+          </button>
+        </form>
+        <p className="auth-switch">New here? <Link to="/signup">Create an account</Link></p>
+      </section>
+    </main>
   );
 }
 

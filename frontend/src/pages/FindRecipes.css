@@ -1,14 +1,15 @@
 .find-page > p {
-  max-width: 640px;
-  margin: 0 auto 8px;
+  margin: 24px 0 0;
 }
 
 .find-section {
-  max-width: 900px;
-  margin: 24px auto 0;
-  padding: 16px 20px;
+  width: 100%;
+  margin: 20px 0 0;
+  padding: 22px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 5px 18px rgba(51, 111, 155, 0.05);
   text-align: left;
 }
 
@@ -17,6 +18,7 @@
   margin: 0 0 12px;
   font-size: 18px;
   color: var(--text-h);
+  font-weight: 800;
 }
 
 .find-ingredient-form {
@@ -28,20 +30,23 @@
 
 .find-ingredient-form input {
   flex: 1 1 220px;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--bg);
+  background: #f9fcff;
   color: var(--text-h);
   font: inherit;
 }
 
 .find-section button {
+  min-height: 42px;
   padding: 8px 14px;
   border: 1px solid var(--accent-border);
   border-radius: 8px;
   background: var(--accent-bg);
-  color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 700;
   font: inherit;
   cursor: pointer;
 }
@@ -72,6 +77,7 @@
 }
 
 .find-chips button {
+  min-height: 32px;
   padding: 0 8px;
   border: none;
   border-radius: 999px;
@@ -95,6 +101,7 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  min-height: 36px;
 }
 
 .find-note,
@@ -126,7 +133,8 @@
   border: 1px solid var(--accent-border);
   border-radius: 8px;
   background: var(--accent-bg);
-  color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 700;
   font: inherit;
   cursor: pointer;
 }

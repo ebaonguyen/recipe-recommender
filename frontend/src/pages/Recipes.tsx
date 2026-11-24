@@ -24,9 +24,14 @@ function Recipes({ user }: { user: User | null }) {
 
   return (
     <main className="recipes-page">
-      <h1>Recipes</h1>
+      <header className="page-heading">
+        <p className="page-eyebrow">EXPLORE SOMETHING DELICIOUS</p>
+        <h1>Recipes</h1>
+        <p className="page-intro">Find your next favorite meal by name, ingredient, or category.</p>
+      </header>
 
       <div className="recipes-filters">
+        <div className="filter-field">
         <label htmlFor="recipe-search">Search by name or ingredient</label>
         <input
           id="recipe-search"
@@ -35,6 +40,8 @@ function Recipes({ user }: { user: User | null }) {
           onChange={(event) => setQuery(event.target.value)}
           placeholder="e.g. chicken"
         />
+        </div>
+        <div className="filter-field">
         <label htmlFor="recipe-category">Category</label>
         <select
           id="recipe-category"
@@ -46,6 +53,7 @@ function Recipes({ user }: { user: User | null }) {
             <option key={name} value={name}>{name}</option>
           ))}
         </select>
+        </div>
       </div>
 
       {saveError && <p role="alert">{saveError}</p>}
@@ -54,6 +62,8 @@ function Recipes({ user }: { user: User | null }) {
       ) : visibleMeals.length === 0 ? (
         <p>No recipes found.</p>
       ) : (
+        <>
+        <p className="results-count" role="status">{visibleMeals.length} recipe{visibleMeals.length === 1 ? "" : "s"} found</p>
         <ul className="recipes-grid">
           {visibleMeals.map((meal) => (
             <RecipeCard
@@ -66,6 +76,7 @@ function Recipes({ user }: { user: User | null }) {
             />
           ))}
         </ul>
+        </>
       )}
     </main>
   );
