@@ -4,6 +4,7 @@ import type { User } from "@supabase/supabase-js";
 import "./Recipes.css";
 import "./FindRecipes.css";
 import { supabase } from "../auth/supabase";
+import Autocomplete from "../Autocomplete";
 import RecipeCard from "./RecipeCard";
 import { useMeals, useSavedRecipes } from "./recipeData";
 import { DIETS, findMatches } from "./recipeMatching";
@@ -31,18 +32,15 @@ function normalizeIngredient(value: string) {
   return value.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
-  const next = new Set(set);
-  if (next.has(value)) next.delete(value);
-  else next.add(value);
-  return next;
-}
-
 function FindRecipes({ user }: { user: User | null }) {
   const { meals, status } = useMeals();
   const { savedIds, busyId, saveError, toggleSave } = useSavedRecipes(user);
   const [ingredientInput, setIngredientInput] = useState("");
   const [ingredients, setIngredients] = useState<string[]>([]);
+  const [dietInput, setDietInput] = useState("");
+  const [cuisineInput, setCuisineInput] = useState("");
+  const [dietError, setDietError] = useState("");
+  const [cuisineError, setCuisineError] = useState("");
   const [diets, setDiets] = useState<Set<DietId>>(() => new Set(loadPreferences().diets));
   const [cuisines, setCuisines] = useState<Set<string>>(() => new Set(loadPreferences().cuisines));
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -144,17 +142,13 @@ function FindRecipes({ user }: { user: User | null }) {
         <h2 id="find-ingredients-heading">Your ingredients</h2>
         <form className="find-ingredient-form" onSubmit={handleAddIngredient}>
           <label htmlFor="find-ingredient">Ingredient</label>
-          <input
+          <Autocomplete
             id="find-ingredient"
-            list="find-ingredient-suggestions"
             value={ingredientInput}
-            onChange={(event) => setIngredientInput(event.target.value)}
+            options={ingredientSuggestions}
+            onChange={setIngredientInput}
             placeholder="e.g. chicken, garlic"
-            autoComplete="off"
           />
-          <datalist id="find-ingredient-suggestions">
-            {ingredientSuggestions.map((name) => <option key={name} value={name} />)}
-          </datalist>
           <button type="submit" disabled={!ingredientInput.trim()}>Add</button>
           {user && (
             <button type="button" onClick={() => void addInventoryIngredients()} disabled={inventoryLoading}>
@@ -184,43 +178,83 @@ function FindRecipes({ user }: { user: User | null }) {
         )}
       </section>
 
-      <fieldset className="find-section find-options">
-        <legend>Dietary restrictions</legend>
-        {DIETS.map((diet) => (
-          <label key={diet.id}>
-            <input
-              type="checkbox"
-              checked={diets.has(diet.id)}
-              onChange={() => setDiets((current) => toggleInSet(current, diet.id))}
-            />
-            {diet.label}
-          </label>
-        ))}
+      <section className="find-section" aria-labelledby="diet-heading">
+        <h2 id="diet-heading">Dietary restrictions</h2>
+        <form className="find-ingredient-form" onSubmit={(event) => {
+          event.preventDefault();
+          const diet = DIETS.find((item) => item.label.toLowerCase() === dietInput.trim().toLowerCase());
+          if (!diet) { setDietError("Choose a restriction from the suggestions."); return; }
+          setDiets((current) => new Set([...current, diet.id]));
+          setDietInput("");
+          setDietError("");
+        }}>
+          <label htmlFor="find-diet">Restriction</label>
+          <Autocomplete id="find-diet" value={dietInput}
+            options={DIETS.filter((diet) => !diets.has(diet.id)).map((diet) => diet.label)}
+            onChange={(value) => { setDietInput(value); setDietError(""); }}
+            onSelect={(label) => {
+              const diet = DIETS.find((item) => item.label === label);
+              if (diet) setDiets((current) => new Set([...current, diet.id]));
+              setDietInput("");
+              setDietError("");
+            }}
+            placeholder="Search restrictions"
+          />
+          <button type="submit" disabled={!dietInput.trim()}>Add</button>
+          {diets.size > 0 && <button type="button" onClick={() => setDiets(new Set())}>Clear all</button>}
+        </form>
+        {dietError && <p className="error" role="alert">{dietError}</p>}
+        {diets.size > 0 && (
+          <ul className="find-chips" aria-label="Selected dietary restrictions">
+            {DIETS.filter((diet) => diets.has(diet.id)).map((diet) => (
+              <li key={diet.id}>{diet.label}<button type="button" aria-label={`Remove ${diet.label}`} onClick={() => setDiets((current) => {
+                const next = new Set(current); next.delete(diet.id); return next;
+              })}>×</button></li>
+            ))}
+          </ul>
+        )}
         <p className="find-note">
           Recipes that don't meet these are hidden. Checks are based on ingredient names, so
           always double-check labels for allergies.
         </p>
-      </fieldset>
+      </section>
 
-      <fieldset className="find-section find-options">
-        <legend>Preferred cuisines</legend>
+      <section className="find-section" aria-labelledby="cuisine-heading">
+        <h2 id="cuisine-heading">Preferred cuisines</h2>
         {availableCuisines.length === 0 && !status && <p>No cuisines available.</p>}
-        {availableCuisines.map((cuisine) => (
-          <label key={cuisine}>
-            <input
-              type="checkbox"
-              checked={cuisines.has(cuisine)}
-              onChange={() => setCuisines((current) => toggleInSet(current, cuisine))}
-            />
-            {cuisine}
-          </label>
-        ))}
+        <form className="find-ingredient-form" onSubmit={(event) => {
+          event.preventDefault();
+          const cuisine = availableCuisines.find((item) => item.toLowerCase() === cuisineInput.trim().toLowerCase());
+          if (!cuisine) { setCuisineError("Choose a cuisine from the suggestions."); return; }
+          setCuisines((current) => new Set([...current, cuisine]));
+          setCuisineInput("");
+          setCuisineError("");
+        }}>
+          <label htmlFor="find-cuisine">Cuisine</label>
+          <Autocomplete id="find-cuisine" value={cuisineInput}
+            options={availableCuisines.filter((cuisine) => !cuisines.has(cuisine))}
+            onChange={(value) => { setCuisineInput(value); setCuisineError(""); }}
+            onSelect={(cuisine) => {
+              setCuisines((current) => new Set([...current, cuisine]));
+              setCuisineInput("");
+              setCuisineError("");
+            }}
+            placeholder="Search cuisines"
+          />
+          <button type="submit" disabled={!cuisineInput.trim()}>Add</button>
+          {cuisines.size > 0 && <button type="button" onClick={() => setCuisines(new Set())}>Clear cuisines</button>}
+        </form>
+        {cuisineError && <p className="error" role="alert">{cuisineError}</p>}
         {cuisines.size > 0 && (
-          <button type="button" className="find-clear" onClick={() => setCuisines(new Set())}>
-            Clear cuisines
-          </button>
+          <ul className="find-chips" aria-label="Selected cuisines">
+            {[...cuisines].map((cuisine) => (
+              <li key={cuisine}>{cuisine}<button type="button" aria-label={`Remove ${cuisine}`} onClick={() => setCuisines((current) => {
+                const next = new Set(current); next.delete(cuisine); return next;
+              })}>×</button></li>
+            ))}
+          </ul>
         )}
-      </fieldset>
+      </section>
 
       {saveError && <p role="alert">{saveError}</p>}
       {status ? (

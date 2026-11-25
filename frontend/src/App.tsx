@@ -122,7 +122,7 @@ function App() {
         />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login user={user} />} />
         <Route
           path="/profile"
           element={

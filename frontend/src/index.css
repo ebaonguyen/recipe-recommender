@@ -220,6 +220,35 @@ fieldset {
 .profile-form p { margin-bottom: 0; }
 input[type="checkbox"] { accent-color: var(--accent-strong); width: 18px; height: 18px; }
 
+.autocomplete { position: relative; min-width: 0; }
+.autocomplete input { width: 100%; }
+.autocomplete-options {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.autocomplete-options li {
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: var(--text-h);
+  cursor: pointer;
+}
+.autocomplete-options li:hover, .autocomplete-options li[aria-selected="true"] {
+  background: var(--accent-bg);
+  color: var(--accent-strong);
+}
+
 .error, .message {
   padding: 10px 12px;
   border-radius: 8px;

@@ -39,6 +39,8 @@
   font: inherit;
 }
 
+.find-ingredient-form .autocomplete { flex: 1 1 220px; }
+
 .find-section button {
   min-height: 42px;
   padding: 8px 14px;

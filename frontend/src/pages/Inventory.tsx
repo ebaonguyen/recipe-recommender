@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
+import Autocomplete from "../Autocomplete";
 import "./Inventory.css";
 import { supabase } from "../auth/supabase";
 
@@ -415,16 +416,13 @@ function Inventory() {
             {editingItem ? "Edit Ingredient" : "Add Ingredient"}
           </h2>
           <label htmlFor="ingredient-name">Ingredient</label>
-          <input
+          <Autocomplete
             id="ingredient-name"
             name="ingredient"
-            type="text"
-            list="ingredient-options"
-            autoComplete="off"
             placeholder="Type to search ingredients"
             value={ingredientQuery}
-            onChange={(event) => {
-              const value = event.target.value;
+            options={ingredients.map((ingredient) => ingredient.name)}
+            onChange={(value) => {
               setIngredientQuery(value);
               setSelectedIngredientId(
                 ingredients.find(
@@ -434,11 +432,6 @@ function Inventory() {
             }}
             required
           />
-          <datalist id="ingredient-options">
-            {matchingIngredients.map((ingredient) => (
-              <option key={ingredient.id} value={ingredient.name} />
-            ))}
-          </datalist>
           <p role="status">
             {ingredientStatus || (
               matchingIngredients.length === 0 ? "No matching ingredients." : ""
