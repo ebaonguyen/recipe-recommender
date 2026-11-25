@@ -89,7 +89,7 @@ function App() {
   return (
     <>
       <nav className="app-nav" aria-label="Main navigation">
-        <NavLink className="nav-brand" to="/" end aria-label="Recipe Recommender home"><span>Recipe Recommender</span></NavLink>
+        <NavLink className="nav-brand" to="/" end aria-label="PantryPal home"><span>PantryPAl</span></NavLink>
         <NavLink to="/recipes">Recipes</NavLink>
         <NavLink to="/find">Find Recipes</NavLink>
         {user && <NavLink to="/saved">Saved</NavLink>}
