@@ -1,5 +1,6 @@
-import { useActionState } from "react";
-import { Link } from "react-router";
+import { useActionState, useEffect } from "react";
+import type { User } from "@supabase/supabase-js";
+import { Link, useNavigate } from "react-router";
 import { supabase } from "./supabase";
 
 async function handleLoginForm(_prevState: any, formData: FormData) {
@@ -32,11 +33,15 @@ async function handleLoginForm(_prevState: any, formData: FormData) {
   }
 }
 
-function Login() {
+function Login({ user }: { user: User | null }) {
+  const navigate = useNavigate();
   const [state, formAction, isPending] = useActionState(handleLoginForm, {
     error: "",
     message: "",
   });
+  useEffect(() => {
+    if (state.message && user) navigate("/profile", { replace: true });
+  }, [state.message, user, navigate]);
 
   return (
     <main className="auth-page">

@@ -1,3 +1,4 @@
+import { useId, useRef } from "react";
 import type { ReactNode } from "react";
 
 export type Meal = {
@@ -36,50 +37,24 @@ type Props = {
 };
 
 function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Props) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const ingredients = (
+    <ul className="recipe-ingredients">
+      {meal.ingredients.map((ingredient, index) => {
+        const measure = getMeasure(meal, ingredient, index);
+        return <li key={`${ingredient}-${index}`}>{measure ? `${measure} ` : ""}{ingredient}</li>;
+      })}
+    </ul>
+  );
+
   return (
     <li className="recipe-card">
-      {meal.thumbnail_url && (
-        <img
-          className="recipe-card-image"
-          src={meal.thumbnail_url}
-          alt={meal.name}
-          loading="lazy"
-          onError={(event) => { event.currentTarget.hidden = true; }}
-        />
-      )}
-      <h2>{meal.name}</h2>
+      <h2><button className="recipe-title" type="button" onClick={() => dialogRef.current?.showModal()}>{meal.name}</button></h2>
       <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
       {children}
-
-      <details>
-        <summary>Ingredients ({meal.ingredients.length})</summary>
-        <ul className="recipe-ingredients">
-          {meal.ingredients.map((ingredient, index) => {
-            const measure = getMeasure(meal, ingredient, index);
-            return (
-              <li key={`${ingredient}-${index}`}>
-                {measure ? `${measure} ` : ""}{ingredient}
-              </li>
-            );
-          })}
-        </ul>
-      </details>
-
-      {meal.instructions && (
-        <details>
-          <summary>Instructions</summary>
-          <p className="recipe-instructions">{meal.instructions}</p>
-        </details>
-      )}
-
-      <div className="recipe-links">
-        {meal.youtube_url && (
-          <a href={meal.youtube_url} target="_blank" rel="noopener noreferrer">Video</a>
-        )}
-        {meal.source_url && (
-          <a href={meal.source_url} target="_blank" rel="noopener noreferrer">Source</a>
-        )}
-      </div>
+      <h3 className="recipe-ingredients-heading">Ingredients</h3>
+      {ingredients}
 
       {canSave && (
         <button
@@ -92,6 +67,23 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Prop
           {busy ? "Working..." : saved ? "Remove from saved" : "Save recipe"}
         </button>
       )}
+      <dialog ref={dialogRef} className="recipe-dialog" aria-labelledby={titleId}>
+        <div className="recipe-dialog-heading">
+          <h2 id={titleId}>{meal.name}</h2>
+          <button type="button" className="recipe-dialog-close" onClick={() => dialogRef.current?.close()} aria-label="Close recipe details">×</button>
+        </div>
+        <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
+        <h3>Ingredients</h3>
+        {ingredients}
+        <h3>Instructions</h3>
+        <p className="recipe-instructions">{meal.instructions || "No instructions available."}</p>
+        {(meal.youtube_url || meal.source_url) && (
+          <div className="recipe-links">
+            {meal.youtube_url && <a href={meal.youtube_url} target="_blank" rel="noopener noreferrer">Watch video</a>}
+            {meal.source_url && <a href={meal.source_url} target="_blank" rel="noopener noreferrer">View source</a>}
+          </div>
+        )}
+      </dialog>
     </li>
   );
 }
