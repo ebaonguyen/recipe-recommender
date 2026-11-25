@@ -16,7 +16,7 @@
 .find-section h2,
 .find-section legend {
   margin: 0 0 12px;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--text-h);
   font-weight: 800;
 }
@@ -84,7 +84,7 @@
   border: none;
   border-radius: 999px;
   background: transparent;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.4;
 }
 
@@ -114,13 +114,13 @@
 
 .find-note {
   margin: 4px 0 0;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .find-match {
   border-radius: 8px;
   background: var(--accent-bg);
-  font-size: 14px;
+  font-size: 16px;
   font-style: italic;
 }
 

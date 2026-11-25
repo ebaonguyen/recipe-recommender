@@ -19,7 +19,6 @@ function Home({ user }: { user: User | null }) {
           </p>
           <div className="home-actions">
             <Link className="home-primary" to="/find">Find recipes</Link>
-            <Link className="home-secondary" to="/recipes">Browse all recipes</Link>
           </div>
         </div>
         <div className="home-visual" aria-hidden="true">

@@ -3,7 +3,6 @@ import type { User } from "@supabase/supabase-js";
 import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
-import Recipes from "./pages/Recipes";
 import FindRecipes from "./pages/FindRecipes";
 import SavedRecipes from "./pages/SavedRecipes";
 import Signup from "./auth/Signup";
@@ -97,7 +96,6 @@ function App() {
     <>
       <nav className="app-nav" aria-label="Main navigation">
         <NavLink className="nav-brand" to="/" end aria-label="PantryPal home"><span>PantryPal</span></NavLink>
-        <NavLink to="/recipes">Recipes</NavLink>
         <NavLink to="/find">Find Recipes</NavLink>
         {user && <NavLink to="/saved">Saved</NavLink>}
         {user && <NavLink to="/inventory">Inventory</NavLink>}
@@ -116,7 +114,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home user={user} />} />
         
-        <Route path="/recipes" element={<Recipes user={user} />} />
+        <Route path="/recipes" element={<Navigate to="/find" replace />} />
         <Route path="/find" element={<FindRecipes user={user} />} />
         <Route
           path="/saved"

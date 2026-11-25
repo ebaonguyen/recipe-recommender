@@ -97,7 +97,7 @@ function SavedRecipes({ user }: { user: User }) {
         <p role="status">{status}</p>
       ) : meals.length === 0 ? (
         <p className="empty-state">
-          You haven't saved any recipes yet. Browse the <Link to="/recipes">Recipes</Link> page
+          You haven't saved any recipes yet. Visit the <Link to="/find">Find Recipes</Link> page
           to find some.
         </p>
       ) : (

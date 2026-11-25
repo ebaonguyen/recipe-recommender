@@ -24,7 +24,7 @@
   background: var(--surface);
   text-align: left;
 }
-.inventory-filters label { color: var(--text-h); font-size: 14px; font-weight: 700; }
+.inventory-filters label { color: var(--text-h); font-size: 16px; font-weight: 700; }
 
 .inventory-filters input,
 .inventory-filters select {
@@ -67,7 +67,7 @@
 .inventory-quantity {
   margin: 0;
   color: var(--text-h);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
 }
 
@@ -77,14 +77,14 @@
   flex-wrap: wrap;
   gap: 8px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .inventory-expiration-badge {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -214,10 +214,10 @@
   color: var(--text-h);
   font: inherit;
 }
-.inventory-dialog label { color: var(--text-h); font-size: 14px; font-weight: 700; }
+.inventory-dialog label { color: var(--text-h); font-size: 16px; font-weight: 700; }
 
 .inventory-dialog p {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .inventory-dialog-actions {

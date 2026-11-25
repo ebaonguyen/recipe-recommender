@@ -1,4 +1,4 @@
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 export type Meal = {
@@ -29,10 +29,8 @@ function getMeasure(meal: Meal, ingredient: string, index: number): string {
 
 function getYouTubeEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-  );
-  return match ? `https://youtube.com/embed/${match[1]}` : null;
+  const match = url.slice(-11)
+  return match ? `https://www.youtube.com/embed/${match}` : null;
 }
 
 type Props = {
@@ -46,6 +44,8 @@ type Props = {
 
 function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
   const titleId = useId();
   const ingredients = (
     <ul className="recipe-ingredients">
@@ -69,7 +69,7 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Prop
           onError={(event) => { event.currentTarget.hidden = true; }}
         />
       )}
-      <h2><button className="recipe-title" type="button" onClick={() => dialogRef.current?.showModal()}>{meal.name}</button></h2>
+      <h2><button className="recipe-title" type="button" onClick={() => { setVideoLoading(true); dialogRef.current?.showModal(); setDialogOpen(true); }}>{meal.name}</button></h2>
       <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
       {children}
       <h3 className="recipe-ingredients-heading">Ingredients</h3>
@@ -86,23 +86,27 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Prop
           {busy ? "Working..." : saved ? "Remove from saved" : "Save recipe"}
         </button>
       )}
-      <dialog ref={dialogRef} className="recipe-dialog" aria-labelledby={titleId}>
+      <dialog ref={dialogRef} className="recipe-dialog" aria-labelledby={titleId} onClose={() => setDialogOpen(false)}>
         <div className="recipe-dialog-heading">
           <h2 id={titleId}>{meal.name}</h2>
           <button type="button" className="recipe-dialog-close" onClick={() => dialogRef.current?.close()} aria-label="Close recipe details">×</button>
         </div>
-        {embedUrl && (
+        {dialogOpen && embedUrl && (
           <div className="recipe-video">
             <h3>Video Tutorial</h3>
-            <iframe
-              src={embedUrl}
-              title={`${meal.name} video tutorial`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <div className="recipe-video-player" aria-busy={videoLoading}>
+              {videoLoading && <p className="recipe-video-loading" role="status">Loading video...</p>}
+              <iframe
+                src={embedUrl}
+                title={`${meal.name} video tutorial`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={() => setVideoLoading(false)}
+              />
+            </div>
           </div>
         )}
-        <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
+        <p className="recipe-filters">{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
         <h3>Ingredients</h3>
         {ingredients}
         <h3>Instructions</h3>

@@ -14,6 +14,7 @@
   color: var(--text);
   background: var(--bg);
   font-family: var(--sans);
+  font-size: calc(100% + 2px);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -58,7 +59,7 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 .app-nav a {
   flex: none;
   color: #587189;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   text-decoration: none;
   padding: 9px 12px;
@@ -72,7 +73,7 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 .nav-brand {
   margin-right: auto;
   color: var(--text-h) !important;
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 800 !important;
   letter-spacing: -0.3px;
 }
@@ -87,7 +88,7 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   border-radius: 9px;
   background: var(--accent);
   color: white;
-  font-size: 16px;
+  font-size: 18px;
   vertical-align: middle;
 }
 
@@ -120,14 +121,14 @@ h1, h2, h3 {
 
 h1 {
   margin: 0 0 24px;
-  font-size: clamp(36px, 5vw, 52px);
+  font-size: calc(clamp(36px, 5vw, 52px) + 2px);
   letter-spacing: -1.6px;
   font-weight: 800;
 }
 
 h2 {
   margin: 0 0 12px;
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: -0.35px;
   font-weight: 750;
 }
@@ -159,11 +160,11 @@ fieldset {
 .page-eyebrow {
   margin: 0;
   color: var(--accent-strong);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.1em;
 }
-.page-intro { max-width: 700px; margin: 0; font-size: 17px; }
+.page-intro { max-width: 700px; margin: 0; font-size: 19px; }
 .empty-state {
   margin: 24px 0 0;
   padding: 24px;
@@ -181,10 +182,10 @@ fieldset {
   background: var(--surface);
   box-shadow: var(--shadow);
 }
-.auth-card h1 { margin: 8px 0 12px; font-size: clamp(32px, 5vw, 40px); }
+.auth-card h1 { margin: 8px 0 12px; font-size: calc(clamp(32px, 5vw, 40px) + 2px); }
 .account-form, .profile-form fieldset { display: grid; gap: 8px; }
 .account-form { margin-top: 28px; }
-.account-form label, .profile-form label { color: var(--text-h); font-size: 14px; font-weight: 700; }
+.account-form label, .profile-form label { color: var(--text-h); font-size: 16px; font-weight: 700; }
 .account-form input, .profile-form input {
   width: 100%;
   min-width: 0;
@@ -205,7 +206,7 @@ fieldset {
 }
 .account-form button:hover:not(:disabled), .profile-form button:hover:not(:disabled) { background: #20577e; }
 .account-form button:disabled, .profile-form button:disabled { opacity: 0.55; cursor: not-allowed; }
-.auth-switch { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 14px; }
+.auth-switch { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 16px; }
 .auth-switch a { font-weight: 700; }
 .profile-forms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .profile-form {
@@ -216,7 +217,7 @@ fieldset {
   box-shadow: var(--shadow);
 }
 .profile-form fieldset { margin: 0; padding: 0; border: 0; }
-.profile-form legend { padding: 0 0 18px; color: var(--text-h); font-size: 20px; font-weight: 800; }
+.profile-form legend { padding: 0 0 18px; color: var(--text-h); font-size: 22px; font-weight: 800; }
 .profile-form p { margin-bottom: 0; }
 input[type="checkbox"] { accent-color: var(--accent-strong); width: 18px; height: 18px; }
 
@@ -264,7 +265,7 @@ input[type="checkbox"] { accent-color: var(--accent-strong); width: 18px; height
 .auth-notice {
   position: absolute;
   width: 100vw;
-  font-size: large;
+  font-size: calc((1rem - 2px) * 1.125 + 2px);
 }
 
 @media (max-width: 700px) {
@@ -272,7 +273,7 @@ input[type="checkbox"] { accent-color: var(--accent-strong); width: 18px; height
   .nav-brand { margin-right: 8px; }
   .nav-brand span { display: none; }
   main { width: min(100% - 28px, 1120px); padding: 32px 0 48px; }
-  h1 { font-size: 34px; }
+  h1 { font-size: 36px; }
   .auth-card { margin: 4px 0; padding: 26px 22px; }
   .profile-forms { grid-template-columns: 1fr; }
 }
