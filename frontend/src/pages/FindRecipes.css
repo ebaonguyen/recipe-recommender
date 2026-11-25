@@ -118,11 +118,10 @@
 }
 
 .find-match {
-  margin-top: 8px;
-  padding: 8px 12px;
   border-radius: 8px;
   background: var(--accent-bg);
   font-size: 14px;
+  font-style: italic;
 }
 
 .find-match p {

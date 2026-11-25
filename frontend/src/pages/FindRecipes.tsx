@@ -41,6 +41,7 @@ function FindRecipes({ user }: { user: User | null }) {
   const [cuisineInput, setCuisineInput] = useState("");
   const [dietError, setDietError] = useState("");
   const [cuisineError, setCuisineError] = useState("");
+  const [ingredientError, setIngredientError] = useState("");
   const [diets, setDiets] = useState<Set<DietId>>(() => new Set(loadPreferences().diets));
   const [cuisines, setCuisines] = useState<Set<string>>(() => new Set(loadPreferences().cuisines));
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -86,12 +87,6 @@ function FindRecipes({ user }: { user: User | null }) {
     });
   }
 
-  function handleAddIngredient(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    addIngredients(ingredientInput.split(","));
-    setIngredientInput("");
-  }
-
   async function addInventoryIngredients() {
     if (!user) return;
     setInventoryLoading(true);
@@ -124,7 +119,6 @@ function FindRecipes({ user }: { user: User | null }) {
     }
   }
 
-  const hasCriteria = ingredients.length > 0 || cuisines.size > 0;
   const visibleMatches = matches.slice(0, visibleCount);
 
   return (
@@ -140,16 +134,41 @@ function FindRecipes({ user }: { user: User | null }) {
 
       <section className="find-section" aria-labelledby="find-ingredients-heading">
         <h2 id="find-ingredients-heading">Your ingredients</h2>
-        <form className="find-ingredient-form" onSubmit={handleAddIngredient}>
+        <form
+          className="find-ingredient-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const trimmed = ingredientInput.trim();
+            if (!trimmed) return;
+            // Optional: If you want to restrict to suggestions like DIETS, validate against ingredientSuggestions here
+            // and call setIngredientError("Choose an ingredient from the suggestions.");
+            if (!ingredients.some((item) => item.toLowerCase() === trimmed.toLowerCase())) {
+              setIngredients((current) => [...current, trimmed]);
+            }
+            setIngredientInput("");
+            setIngredientError("");
+          }}
+        >
           <label htmlFor="find-ingredient">Ingredient</label>
           <Autocomplete
             id="find-ingredient"
             value={ingredientInput}
-            options={ingredientSuggestions}
-            onChange={setIngredientInput}
+            options={ingredientSuggestions.filter(
+              (suggestion) => !ingredients.some((item) => item.toLowerCase() === suggestion.toLowerCase())
+            )}
+            onChange={(value) => {
+              setIngredientInput(value);
+              setIngredientError("");
+            }}
+            onSelect={(label) => {
+              if (!ingredients.some((item) => item.toLowerCase() === label.toLowerCase())) {
+                setIngredients((current) => [...current, label]);
+              }
+              setIngredientInput("");
+              setIngredientError("");
+            }}
             placeholder="e.g. chicken, garlic"
           />
-          <button type="submit" disabled={!ingredientInput.trim()}>Add</button>
           {user && (
             <button type="button" onClick={() => void addInventoryIngredients()} disabled={inventoryLoading}>
               {inventoryLoading ? "Loading..." : "Use my inventory"}
@@ -159,6 +178,7 @@ function FindRecipes({ user }: { user: User | null }) {
             <button type="button" onClick={() => setIngredients([])}>Clear all</button>
           )}
         </form>
+        {ingredientError && <p className="error" role="alert">{ingredientError}</p>}
         {inventoryStatus && <p role="status">{inventoryStatus}</p>}
         {ingredients.length > 0 && (
           <ul className="find-chips" aria-label="Selected ingredients">
@@ -200,7 +220,6 @@ function FindRecipes({ user }: { user: User | null }) {
             }}
             placeholder="Search restrictions"
           />
-          <button type="submit" disabled={!dietInput.trim()}>Add</button>
           {diets.size > 0 && <button type="button" onClick={() => setDiets(new Set())}>Clear all</button>}
         </form>
         {dietError && <p className="error" role="alert">{dietError}</p>}
@@ -241,7 +260,6 @@ function FindRecipes({ user }: { user: User | null }) {
             }}
             placeholder="Search cuisines"
           />
-          <button type="submit" disabled={!cuisineInput.trim()}>Add</button>
           {cuisines.size > 0 && <button type="button" onClick={() => setCuisines(new Set())}>Clear cuisines</button>}
         </form>
         {cuisineError && <p className="error" role="alert">{cuisineError}</p>}
@@ -257,10 +275,7 @@ function FindRecipes({ user }: { user: User | null }) {
       </section>
 
       {saveError && <p role="alert">{saveError}</p>}
-      {status ? (
-        <p role="status">{status}</p>
-      ) : !hasCriteria ? (
-        <p>Add an ingredient or choose a cuisine to see matching recipes.</p>
+      {status ? (<p role="status">{status}</p>
       ) : matches.length === 0 ? (
         <p>No recipes match. Try adding more ingredients or removing a restriction.</p>
       ) : (
@@ -282,8 +297,7 @@ function FindRecipes({ user }: { user: User | null }) {
                   {ingredients.length > 0 && (
                     <p>
                       <strong>
-                        Matches {match.matchedIngredients.length} of {ingredients.length} ingredient
-                        {ingredients.length === 1 ? "" : "s"}
+                        Matches {match.matchedIngredients.length} of {ingredients.length} ingredient{ingredients.length === 1 ? "" : "s"}
                       </strong>
                       {match.matchedIngredients.length > 0 && `: ${match.matchedIngredients.join(", ")}`}
                     </p>

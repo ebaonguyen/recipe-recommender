@@ -11,6 +11,7 @@ import Login from "./auth/Login";
 import Profile from "./pages/Profile";
 import { supabase } from "./auth/supabase";
 import { clearLastActivity, IDLE_TIMEOUT_MS, useIdleLogout } from "./auth/useIdleLogout";
+import "./index.css";
 
 function App() {
   const navigate = useNavigate();
@@ -19,6 +20,12 @@ function App() {
   const [authError, setAuthError] = useState("");
   const [authNotice, setAuthNotice] = useState("");
   const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    if (!authNotice) return;
+    const timer = setTimeout(() => setAuthNotice(""), 3000);
+    return () => clearTimeout(timer);
+  }, [authNotice]);
 
   useEffect(() => {
     let active = true;
@@ -89,7 +96,7 @@ function App() {
   return (
     <>
       <nav className="app-nav" aria-label="Main navigation">
-        <NavLink className="nav-brand" to="/" end aria-label="PantryPal home"><span>PantryPAl</span></NavLink>
+        <NavLink className="nav-brand" to="/" end aria-label="PantryPal home"><span>PantryPal</span></NavLink>
         <NavLink to="/recipes">Recipes</NavLink>
         <NavLink to="/find">Find Recipes</NavLink>
         {user && <NavLink to="/saved">Saved</NavLink>}
@@ -105,7 +112,7 @@ function App() {
       </nav>
 
       {authError && <p role="alert">{authError}</p>}
-      {authNotice && <p role="status">{authNotice}</p>}
+      {authNotice && <p className="auth-notice" role="status">{authNotice}</p>}
       <Routes>
         <Route path="/" element={<Home user={user} />} />
         

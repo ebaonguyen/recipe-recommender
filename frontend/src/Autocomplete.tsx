@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
 type Props = {
@@ -19,12 +19,18 @@ function Autocomplete({ id, name, value, options, onChange, onSelect, placeholde
   const matches = options.filter((option) => option.toLowerCase().includes(value.trim().toLowerCase())).slice(0, 50);
   const expanded = open && matches.length > 0;
   const activeIndex = active < matches.length ? active : -1;
+  const isFocusedRef = useRef<HTMLInputElement>(null);
 
   function choose(option: string) {
-    if (onSelect) onSelect(option);
-    else onChange(option);
+    if (onSelect) {
+      onSelect(option);
+    }
+    else {
+      onChange(option);
+    }
     setOpen(false);
     setActive(-1);
+    isFocusedRef.current?.blur();
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -50,6 +56,7 @@ function Autocomplete({ id, name, value, options, onChange, onSelect, placeholde
   return (
     <div className="autocomplete">
       <input
+        ref={isFocusedRef}
         id={id}
         name={name}
         value={value}

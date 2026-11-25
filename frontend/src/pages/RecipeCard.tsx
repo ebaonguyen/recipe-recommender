@@ -27,6 +27,14 @@ function getMeasure(meal: Meal, ingredient: string, index: number): string {
   return String(measures[ingredient] ?? "").trim();
 }
 
+function getYouTubeEmbedUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match ? `https://youtube.com/embed/${match[1]}` : null;
+}
+
 type Props = {
   meal: Meal;
   saved: boolean;
@@ -48,8 +56,19 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Prop
     </ul>
   );
 
+  const embedUrl = getYouTubeEmbedUrl(meal.youtube_url);
+
   return (
     <li className="recipe-card">
+      {meal.thumbnail_url && (
+        <img
+          className="recipe-card-image"
+          src={meal.thumbnail_url}
+          alt={meal.name}
+          loading="lazy"
+          onError={(event) => { event.currentTarget.hidden = true; }}
+        />
+      )}
       <h2><button className="recipe-title" type="button" onClick={() => dialogRef.current?.showModal()}>{meal.name}</button></h2>
       <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
       {children}
@@ -72,15 +91,28 @@ function RecipeCard({ meal, saved, busy, onToggleSave, canSave, children }: Prop
           <h2 id={titleId}>{meal.name}</h2>
           <button type="button" className="recipe-dialog-close" onClick={() => dialogRef.current?.close()} aria-label="Close recipe details">×</button>
         </div>
+        {embedUrl && (
+          <div className="recipe-video">
+            <h3>Video Tutorial</h3>
+            <iframe
+              src={embedUrl}
+              title={`${meal.name} video tutorial`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
         <p>{[meal.category, meal.area ?? meal.country].filter(Boolean).join(" · ")}</p>
         <h3>Ingredients</h3>
         {ingredients}
         <h3>Instructions</h3>
         <p className="recipe-instructions">{meal.instructions || "No instructions available."}</p>
-        {(meal.youtube_url || meal.source_url) && (
+
+        {meal.source_url && (
           <div className="recipe-links">
-            {meal.youtube_url && <a href={meal.youtube_url} target="_blank" rel="noopener noreferrer">Watch video</a>}
-            {meal.source_url && <a href={meal.source_url} target="_blank" rel="noopener noreferrer">View source</a>}
+            <a href={meal.source_url} target="_blank" rel="noopener noreferrer">
+              View source
+            </a>
           </div>
         )}
       </dialog>
