@@ -4,6 +4,7 @@ import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/Home";
 import Inventory from "./pages/Inventory";
 import FindRecipes from "./pages/FindRecipes";
+import GenerateRecipePage from "./pages/GenerateRecipe";
 import SavedRecipes from "./pages/SavedRecipes";
 import Signup from "./auth/Signup";
 import Login from "./auth/Login";
@@ -97,6 +98,7 @@ function App() {
       <nav className="app-nav" aria-label="Main navigation">
         <NavLink className="nav-brand" to="/" end aria-label="PantryPal home"><span>PantryPal</span></NavLink>
         <NavLink to="/find">Find Recipes</NavLink>
+        {user && <NavLink to="/generate">AI Recipe</NavLink>}
         {user && <NavLink to="/saved">Saved</NavLink>}
         {user && <NavLink to="/inventory">Inventory</NavLink>}
         {!user && <NavLink to="/signup">Sign up</NavLink>}
@@ -116,6 +118,7 @@ function App() {
         
         <Route path="/recipes" element={<Navigate to="/find" replace />} />
         <Route path="/find" element={<FindRecipes user={user} />} />
+        <Route path="/generate" element={<GenerateRecipePage />} />
         <Route
           path="/saved"
           element={

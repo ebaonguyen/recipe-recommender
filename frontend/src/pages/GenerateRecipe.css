@@ -1,0 +1,135 @@
+.generate-section,
+.generated-recipe {
+  margin-top: 22px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 5px 18px rgba(51, 111, 155, 0.05);
+}
+
+.generate-section h2,
+.generated-recipe h2 {
+  margin: 0 0 18px;
+}
+
+.generate-section form {
+  display: grid;
+  gap: 10px;
+}
+
+.generate-section label {
+  color: var(--text-h);
+  font-weight: 700;
+}
+
+.generate-section textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f9fcff;
+  color: var(--text-h);
+  font: inherit;
+  line-height: 1.5;
+}
+
+.generate-section textarea:focus {
+  outline: 3px solid rgba(71, 145, 198, 0.22);
+  outline-offset: 2px;
+  border-color: #78acd1;
+}
+
+.generate-hint {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.generate-section button,
+.generate-again-button {
+  justify-self: start;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--accent-strong);
+  border-radius: 9px;
+  background: var(--accent-strong);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.generate-section button:hover:not(:disabled),
+.generate-again-button:hover {
+  background: #20577e;
+}
+
+.generate-section button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.generate-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #9f3434;
+  font-weight: 700;
+}
+
+.generate-status {
+  margin: 14px 0 0;
+  color: var(--accent-strong);
+}
+
+.generated-recipe {
+  display: grid;
+  gap: 24px;
+}
+
+.generated-recipe-heading {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.generated-recipe-heading h2 {
+  margin: 6px 0 0;
+  font-size: clamp(26px, 4vw, 36px);
+}
+
+.generated-recipe h3 {
+  margin: 0 0 12px;
+  font-size: 21px;
+}
+
+.generated-ingredients,
+.generated-instructions {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 24px;
+  line-height: 1.65;
+}
+
+.generated-ingredients li,
+.generated-instructions li {
+  padding-left: 4px;
+}
+
+.generated-amount {
+  color: var(--text-h);
+  font-weight: 700;
+}
+
+.generate-again-button {
+  background: var(--accent-bg);
+  color: var(--accent-strong);
+  border-color: var(--accent-border);
+}
+
+.generate-again-button:hover {
+  background: #deeffa;
+}
