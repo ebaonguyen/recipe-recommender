@@ -67,6 +67,18 @@ service-role key. Vite reads this root file and exposes only these two Supabase
 values to the frontend. Restart the frontend after changing them. The `.env`
 file is ignored by Git.
 
+## Google Gemini
+
+Create a `.env` file in the backend folder:
+
+```dotenv
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-3.1-flash-lite
+```
+Go to your Google AI Studio (create one if you don't have an account) and retrieve 
+your API key. Paste it into GEMINI_API_KEY=. For the Gemini model, gemini-3.1-flash-lite
+is stable, but if you have a better experience with a different model, set it to that model.
+
 ## Updating Your Profile
 
 After logging in, select **Profile** in the navigation to update your display
